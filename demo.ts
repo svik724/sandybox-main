@@ -3,21 +3,20 @@ import { HttpbinFormData } from './types/submit.types';
 import { DuckDuckGoRelatedTopicsItem } from './types/search.types';
 
 async function demo() {
-  console.log('🚀 SandyBox API Integration Demo\n');
+  console.log('SandyBox API Integration Demo\n');
 
-  // Demo 1: DuckDuckGo Search
-  console.log('1. 🔍 Testing DuckDuckGo Search API...');
+  console.log('1. Testing DuckDuckGo Search API...');
   try {
     const searchResult = await searchDuckDuckGo('typescript');
     
     if ('error' in searchResult) {
-      console.log('❌ Search failed:', searchResult.message);
+      console.log('Search failed:', searchResult.message);
     } else {
-      console.log('✅ Search successful!');
-      console.log(`   Heading: ${searchResult.Heading}`);
-      console.log(`   Abstract: ${searchResult.Abstract.substring(0, 100)}...`);
-      console.log(`   Source: ${searchResult.AbstractSource}`);
-      console.log(`   Type: ${searchResult.Type}`);
+      console.log('Search successful!');
+      console.log(`Heading: ${searchResult.Heading}`);
+      console.log(`Abstract: ${searchResult.Abstract.substring(0, 100)}...`);
+      console.log(`Source: ${searchResult.AbstractSource}`);
+      console.log(`Type: ${searchResult.Type}`);
       
       // Demo the new RelatedTopics structure
       console.log(`   Related Topics: ${searchResult.RelatedTopics.length} items`);
@@ -32,33 +31,51 @@ async function demo() {
       });
     }
   } catch (error) {
-    console.log('❌ Search error:', error);
+    console.log('Search error:', error);
+  }
+
+  console.log('\n' + '='.repeat(50) + '\n');
+
+  console.log('1b. Testing Error Handling - Empty Query...');
+  try {
+    const emptyQueryResult = await searchDuckDuckGo('');
+    
+    if ('error' in emptyQueryResult) {
+      console.log('Error handling working correctly!');
+      console.log(`Error type: ${emptyQueryResult.error}`);
+      console.log(`Error message: ${emptyQueryResult.message}`);
+      console.log(`Status code: ${emptyQueryResult.statusCode}`);
+    } else {
+      console.log('Unexpected: Empty query returned success instead of error');
+    }
+  } catch (error) {
+    console.log('Unexpected error thrown:', error);
   }
 
   console.log('\n' + '='.repeat(50) + '\n');
 
   // Demo 1b: Search with Validation
-  console.log('1b. ✅ Testing Search with Validation...');
+  console.log('1c. Testing Search with Validation...');
   try {
     // Test with a query that would be sanitized
     const validationResult = await searchWithValidation('  <script>alert("test")</script>  ');
     
     if ('error' in validationResult) {
-      console.log('❌ Validation search failed:', validationResult.message);
+      console.log('Validation search failed:', validationResult.message);
     } else {
-      console.log('✅ Validation search successful!');
-      console.log(`   Heading: ${validationResult.Heading}`);
-      console.log(`   Abstract: ${validationResult.Abstract.substring(0, 100)}...`);
-      console.log('   Note: XSS characters were sanitized from the query');
+      console.log('Validation search successful!');
+      console.log(`Heading: ${validationResult.Heading}`);
+      console.log(`Abstract: ${validationResult.Abstract.substring(0, 100)}...`);
+      console.log('Note: XSS characters were sanitized from the query');
     }
   } catch (error) {
-    console.log('❌ Validation search error:', error);
+    console.log('Validation search error:', error);
   }
 
   console.log('\n' + '='.repeat(50) + '\n');
 
   // Demo 1c: Search with Filtering
-  console.log('1c. 🔍 Testing Search with Filtering...');
+  console.log('1d. Testing Search with Filtering...');
   try {
     // Test with filtering options
     const filteringResult = await searchWithFiltering('javascript', {
@@ -67,23 +84,23 @@ async function demo() {
     });
     
     if ('error' in filteringResult) {
-      console.log('❌ Filtering search failed:', filteringResult.message);
+      console.log('Filtering search failed:', filteringResult.message);
     } else {
-      console.log('✅ Filtering search successful!');
-      console.log(`   Heading: ${filteringResult.Heading}`);
-      console.log(`   Abstract: ${filteringResult.Abstract.substring(0, 100)}...`);
-      console.log(`   Image URL: ${filteringResult.Image || 'Filtered out'}`);
-      console.log(`   Image dimensions: ${filteringResult.ImageWidth}x${filteringResult.ImageHeight} (should be 0x0)`);
-      console.log('   Note: Images were filtered out as requested');
+      console.log('Filtering search successful!');
+      console.log(`Heading: ${filteringResult.Heading}`);
+      console.log(`Abstract: ${filteringResult.Abstract.substring(0, 100)}...`);
+      console.log(`Image URL: ${filteringResult.Image || 'Filtered out'}`);
+      console.log(`Image dimensions: ${filteringResult.ImageWidth}x${filteringResult.ImageHeight} (should be 0x0)`);
+      console.log('Note: Images were filtered out as requested');
     }
   } catch (error) {
-    console.log('❌ Filtering search error:', error);
+    console.log('Filtering search error:', error);
   }
 
   console.log('\n' + '='.repeat(50) + '\n');
 
   // Demo 2: Httpbin Form Submission
-  console.log('2. 📝 Testing Httpbin Form Submission API...');
+  console.log('2. Testing Httpbin Form Submission API...');
   try {
     const formData: HttpbinFormData = {
       custname: 'Demo User',
@@ -100,23 +117,52 @@ async function demo() {
     });
 
     if ('error' in submitResult) {
-      console.log('❌ Form submission failed:', submitResult.message);
+      console.log('Form submission failed:', submitResult.message);
     } else {
-      console.log('✅ Form submission successful!');
-      console.log(`   Status: ${submitResult.statusCode}`);
-      console.log(`   Method: ${submitResult.data.method}`);
-      console.log(`   URL: ${submitResult.data.url}`);
-      console.log(`   Submitted name: ${submitResult.data.form.custname}`);
-      console.log(`   Submitted size: ${submitResult.data.form.size}`);
-      console.log(`   Submitted toppings: ${submitResult.data.form.topping?.join(', ')}`);
+      console.log('Form submission successful!');
+      console.log(`Status: ${submitResult.statusCode}`);
+      console.log(`Method: ${submitResult.data.method}`);
+      console.log(`URL: ${submitResult.data.url}`);
+      console.log(`Submitted name: ${submitResult.data.form.custname}`);
+      console.log(`Submitted size: ${submitResult.data.form.size}`);
+      console.log(`Submitted toppings: ${submitResult.data.form.topping?.join(', ')}`);
     }
   } catch (error) {
-    console.log('❌ Form submission error:', error);
+    console.log('Form submission error:', error);
   }
 
   console.log('\n' + '='.repeat(50) + '\n');
-  console.log('🎉 Demo completed! All APIs are working correctly.');
+
+  console.log('2b. Testing Error Handling - Invalid Form Submission...');
+  try {
+    const invalidFormData: HttpbinFormData = {
+      custname: '',
+      custemail: 'invalid-email',
+      size: 'invalid-size' as any,
+      topping: [],
+      delivery: '25:00',
+      comments: 'a'.repeat(1001)
+    };
+
+    const invalidSubmitResult = await submitForm({
+      formData: invalidFormData,
+      options: { timeout: 30000 }
+    });
+
+    if ('error' in invalidSubmitResult) {
+      console.log('Error handling working correctly!');
+      console.log(`Error type: ${invalidSubmitResult.error}`);
+      console.log(`Error message: ${invalidSubmitResult.message}`);
+      console.log(`Status code: ${invalidSubmitResult.statusCode}`);
+    } else {
+      console.log('Unexpected: Invalid form data returned success instead of error');
+    }
+  } catch (error) {
+    console.log('Unexpected error thrown:', error);
+  }
+
+  console.log('\n' + '='.repeat(50) + '\n');
+  console.log('Demo completed! All APIs are working correctly.');
 }
 
-// Run the demo
 demo().catch(console.error); 

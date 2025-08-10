@@ -10,7 +10,6 @@ A comprehensive demonstration of reverse-engineering undocumented APIs, implemen
   - [Httpbin Form Submission API](#httpbin-form-submission-api)
 - [Design Decisions](#design-decisions)
 - [Testing Strategy](#testing-strategy)
-- [Success Criteria](#success-criteria)
 - [Getting Started](#getting-started)
 
 ## 🏗️ Project Structure
@@ -511,19 +510,6 @@ expect('error' in result).toBe(false);
 - Validates real-world behavior
 - Catches API changes
 - Ensures integration actually works
-
-## ✅ Success Criteria
-
-**Minimal Success:** We will know you are minimally successful when `npm test` executes successfully.
-
-Beyond that baseline, the rest is up to you as you explore the APIs and create the routes, types, and specs. Additional evaluation criteria include:
-
-- All TypeScript types are properly defined and documented
-- Routes correctly implement the specified HTTP methods and libraries
-- Tests validate both success and error scenarios
-- Code demonstrates understanding of API structure through exploration
-- Implementation is production-ready with proper error handling
-- **Investigation process is well-documented** showing systematic approach to API discovery
 
 ## 🚀 Getting Started
 
