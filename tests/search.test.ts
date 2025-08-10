@@ -1,5 +1,4 @@
 import { searchDuckDuckGo, searchWithValidation, searchWithFiltering } from '../routes/search';
-import { SearchResult, SearchError, DuckDuckGoSearchResponse } from '../types/search.types';
 
 describe('Search API Integration', () => {
   // Test successful search

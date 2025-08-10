@@ -1,6 +1,3 @@
-// Httpbin Form Submission Types
-// Based on investigation of actual form structure
-
 export interface HttpbinFormField {
   name: string;
   type: 'text' | 'tel' | 'email' | 'radio' | 'checkbox' | 'time';

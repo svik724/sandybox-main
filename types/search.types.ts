@@ -1,13 +1,7 @@
-// DuckDuckGo Search API Types
-// Based on investigation of actual API responses
-
 export interface DuckDuckGoSearchRequest {
-  q: string; // Search query
-  format?: 'json' | 'xml'; // Response format, default: json
-  no_html?: 0 | 1; // Remove HTML from results, default: 0
-  skip_disambig?: 0 | 1; // Skip disambiguation pages, default: 0
-  t?: string; // App name for tracking
-  callback?: string; // JSONP callback function
+  q: string;
+  format?: 'json' | 'xml';
+  no_html?: 0 | 1;
 }
 
 export interface DuckDuckGoIcon {
@@ -19,27 +13,17 @@ export interface DuckDuckGoIcon {
 export interface DuckDuckGoRelatedTopic {
   FirstURL: string;
   Icon: DuckDuckGoIcon;
-  Result: string; // HTML result
+  Result: string;
   Text: string;
 }
 
-export interface DuckDuckGoInfoboxContent {
-  data_type: string;
-  label: string;
-  value: string | number | object;
-  wiki_order: number;
+export interface DuckDuckGoSeeAlsoSection {
+  Name: string;
+  Topics: DuckDuckGoRelatedTopic[];
 }
 
-export interface DuckDuckGoInfoboxMeta {
-  data_type: string;
-  label: string;
-  value: string;
-}
-
-export interface DuckDuckGoInfobox {
-  content: DuckDuckGoInfoboxContent[];
-  meta: DuckDuckGoInfoboxMeta[];
-}
+// some queries will return both types - number of each is not consistent
+export type DuckDuckGoRelatedTopicsItem = DuckDuckGoRelatedTopic | DuckDuckGoSeeAlsoSection;
 
 export interface DuckDuckGoMeta {
   attribution: string | null;
@@ -110,10 +94,10 @@ export interface DuckDuckGoSearchResponse {
   ImageHeight: number;
   ImageIsLogo: number;
   ImageWidth: number;
-  Infobox: DuckDuckGoInfobox;
+  Infobox: string;
   Redirect: string;
-  RelatedTopics: DuckDuckGoRelatedTopic[];
-  Results: any[]; // Usually empty, structure varies
+  RelatedTopics: DuckDuckGoRelatedTopicsItem[];
+  Results: any[];
   Type: string;
   meta: DuckDuckGoMeta;
 }

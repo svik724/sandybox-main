@@ -1,12 +1,7 @@
 import { DuckDuckGoSearchRequest, DuckDuckGoSearchResponse, SearchError, SearchResult } from '../types/search.types';
 
-/**
- * DuckDuckGo Search API Integration
- * Uses fetch for GET requests as required
- */
 export async function searchDuckDuckGo(query: string, options?: Partial<DuckDuckGoSearchRequest>): Promise<SearchResult> {
   try {
-    // Validate input
     if (!query || typeof query !== 'string' || query.trim().length === 0) {
       const error: SearchError = {
         error: 'INVALID_QUERY',
@@ -16,19 +11,13 @@ export async function searchDuckDuckGo(query: string, options?: Partial<DuckDuck
       return error;
     }
 
-    // Build request parameters
     const params = new URLSearchParams({
       q: query.trim(),
       format: 'json',
-      no_html: '1',
-      skip_disambig: '1'
+      no_html: '1'
     });
-    
-    // Add optional parameters
-    if (options?.t) params.append('t', options.t);
-    if (options?.callback) params.append('callback', options.callback);
 
-    // Make the API request
+    // Actual API request
     const response = await fetch(`https://api.duckduckgo.com/?${params.toString()}`, {
       method: 'GET',
       headers: {
@@ -37,7 +26,7 @@ export async function searchDuckDuckGo(query: string, options?: Partial<DuckDuck
       }
     });
 
-    if (!response.ok) {
+    if (!response || !response.ok) {
       const error: SearchError = {
         error: 'API_ERROR',
         message: `DuckDuckGo API returned status ${response.status}: ${response.statusText}`,
@@ -46,10 +35,8 @@ export async function searchDuckDuckGo(query: string, options?: Partial<DuckDuck
       return error;
     }
 
-    // Parse response
     const data = await response.json() as DuckDuckGoSearchResponse;
     
-    // Validate response structure
     if (!data || typeof data !== 'object') {
       const error: SearchError = {
         error: 'INVALID_RESPONSE',
@@ -62,7 +49,6 @@ export async function searchDuckDuckGo(query: string, options?: Partial<DuckDuck
     return data;
 
   } catch (error) {
-    // Handle network and parsing errors
     const searchError: SearchError = {
       error: 'NETWORK_ERROR',
       message: error instanceof Error ? error.message : 'Unknown network error occurred',
@@ -72,15 +58,13 @@ export async function searchDuckDuckGo(query: string, options?: Partial<DuckDuck
   }
 }
 
-/**
- * Enhanced search with additional validation and processing
- */
 export async function searchWithValidation(
   query: string, 
   options?: Partial<DuckDuckGoSearchRequest>
 ): Promise<SearchResult> {
-  // Additional input sanitization
-  const sanitizedQuery = query.trim().replace(/[<>]/g, ''); // Basic XSS prevention
+  
+  // prevent XSS attacks - remove HTML tags
+  const sanitizedQuery = query.trim().replace(/[<>]/g, '');
   
   if (sanitizedQuery.length > 200) {
     const error: SearchError = {

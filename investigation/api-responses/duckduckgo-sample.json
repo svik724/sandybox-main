@@ -1,0 +1,135 @@
+{
+  "Abstract": "TypeScript is a programming language developed and maintained by Microsoft. It is a strict syntactical superset of JavaScript and adds optional static typing to the language.",
+  "AbstractSource": "Wikipedia",
+  "AbstractText": "TypeScript is a programming language developed and maintained by Microsoft. It is a strict syntactical superset of JavaScript and adds optional static typing to the language.",
+  "AbstractURL": "https://en.wikipedia.org/wiki/TypeScript",
+  "Answer": "",
+  "AnswerType": "",
+  "Definition": "",
+  "DefinitionSource": "",
+  "DefinitionURL": "",
+  "Entity": "",
+  "Heading": "TypeScript",
+  "Image": "https://duckduckgo.com/i/8f8f8f8f.jpg",
+  "ImageHeight": 150,
+  "ImageIsLogo": 0,
+  "ImageWidth": 150,
+  "Infobox": "TypeScript programming language information",
+  "Redirect": "",
+  "RelatedTopics": [
+    {
+      "FirstURL": "https://www.typescriptlang.org/",
+      "Icon": {
+        "Height": "16",
+        "URL": "https://duckduckgo.com/i/8f8f8f8f.jpg",
+        "Width": "16"
+      },
+      "Result": "<a href=\"https://www.typescriptlang.org/\">TypeScript: JavaScript With Syntax For Types</a>",
+      "Text": "TypeScript: JavaScript With Syntax For Types"
+    },
+    {
+      "FirstURL": "https://github.com/microsoft/TypeScript",
+      "Icon": {
+        "Height": "16",
+        "URL": "https://duckduckgo.com/i/8f8f8f8f.jpg",
+        "Width": "16"
+      },
+      "Result": "<a href=\"https://github.com/microsoft/TypeScript\">microsoft/TypeScript: TypeScript is a superset of JavaScript that compiles to clean JavaScript output.</a>",
+      "Text": "microsoft/TypeScript: TypeScript is a superset of JavaScript that compiles to clean JavaScript output."
+    },
+    {
+      "Name": "See also",
+      "Topics": [
+        {
+          "FirstURL": "https://www.typescriptlang.org/docs/",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://www.typescriptlang.org/docs/\">TypeScript Documentation</a> Official documentation and tutorials for TypeScript.",
+          "Text": "TypeScript Documentation Official documentation and tutorials for TypeScript."
+        },
+        {
+          "FirstURL": "https://www.typescriptlang.org/play",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://www.typescriptlang.org/play\">TypeScript Playground</a> Interactive online editor for experimenting with TypeScript code.",
+          "Text": "TypeScript Playground Interactive online editor for experimenting with TypeScript code."
+        },
+        {
+          "FirstURL": "https://github.com/microsoft/TypeScript/wiki",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://github.com/microsoft/TypeScript/wiki\">TypeScript Wiki</a> Community-maintained wiki with additional resources and examples.",
+          "Text": "TypeScript Wiki Community-maintained wiki with additional resources and examples."
+        }
+      ]
+    }
+  ],
+  "Results": [],
+  "Type": "A",
+  "meta": {
+    "attribution": null,
+    "blockgroup": null,
+    "created_date": null,
+    "description": "TypeScript is a programming language developed and maintained by Microsoft. It is a strict syntactical superset of JavaScript and adds optional static typing to the language.",
+    "designer": null,
+    "dev_date": null,
+    "dev_milestone": "live",
+    "developer": [
+      {
+        "name": "Microsoft",
+        "type": "Primary Developer",
+        "url": "https://www.microsoft.com/"
+      }
+    ],
+    "example_query": "typescript",
+    "id": "typescript",
+    "is_stackexchange": null,
+    "js_callback_name": "ddg",
+    "live_date": null,
+    "maintainer": {
+      "github": "microsoft"
+    },
+    "name": "TypeScript",
+    "perl_module": "DDG::Spice::TypeScript",
+    "producer": null,
+    "production_state": "online",
+    "repo": "https://github.com/microsoft/TypeScript",
+    "signal_from": "typescript",
+    "src_domain": "en.wikipedia.org",
+    "src_id": 12345,
+    "src_name": "Wikipedia",
+    "src_options": {
+      "directory": "",
+      "is_fanon": 0,
+      "is_mediawiki": 1,
+      "is_wikipedia": 1,
+      "language": "en",
+      "min_abstract_length": 100,
+      "skip_abstract": 0,
+      "skip_abstract_paren": 0,
+      "skip_end": "",
+      "skip_icon": 0,
+      "skip_image_name": 0,
+      "skip_qr": "",
+      "source_skip": "",
+      "src_info": ""
+    },
+    "src_url": "https://en.wikipedia.org/wiki/TypeScript",
+    "status": "live",
+    "tab": "web",
+    "topic": [
+      "programming",
+      "languages"
+    ],
+    "unsafe": 0
+  }
+} 
