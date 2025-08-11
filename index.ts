@@ -1,7 +1,6 @@
 export { 
   searchDuckDuckGo, 
-  searchWithValidation, 
-  searchWithFiltering 
+  searchWithValidation
 } from './routes/search';
 
 export { 

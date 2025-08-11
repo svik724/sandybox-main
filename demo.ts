@@ -1,4 +1,4 @@
-import { searchDuckDuckGo, searchWithFiltering, searchWithValidation, submitForm } from './routes/index';
+import { searchDuckDuckGo, searchWithValidation, submitForm } from './routes/index';
 import { HttpbinFormData } from './types/submit.types';
 import { DuckDuckGoRelatedTopicsItem } from './types/search.types';
 
@@ -18,10 +18,8 @@ async function demo() {
       console.log(`Source: ${searchResult.AbstractSource}`);
       console.log(`Type: ${searchResult.Type}`);
       
-      // Demo the new RelatedTopics structure
       console.log(`   Related Topics: ${searchResult.RelatedTopics.length} items`);
       
-      // Show how to handle different RelatedTopics structures
       searchResult.RelatedTopics.forEach((item: DuckDuckGoRelatedTopicsItem, index: number) => {
         if ('Name' in item && item.Name === 'See also') {
           console.log(`     ${index + 1}. "See also" section with ${item.Topics.length} topics`);
@@ -54,10 +52,8 @@ async function demo() {
 
   console.log('\n' + '='.repeat(50) + '\n');
 
-  // Demo 1b: Search with Validation
   console.log('1c. Testing Search with Validation...');
   try {
-    // Test with a query that would be sanitized
     const validationResult = await searchWithValidation('  <script>alert("test")</script>  ');
     
     if ('error' in validationResult) {
@@ -72,34 +68,8 @@ async function demo() {
     console.log('Validation search error:', error);
   }
 
-  console.log('\n' + '='.repeat(50) + '\n');
 
-  // Demo 1c: Search with Filtering
-  console.log('1d. Testing Search with Filtering...');
-  try {
-    // Test with filtering options
-    const filteringResult = await searchWithFiltering('javascript', {
-      filterEmptyResults: true,
-      includeImages: false
-    });
-    
-    if ('error' in filteringResult) {
-      console.log('Filtering search failed:', filteringResult.message);
-    } else {
-      console.log('Filtering search successful!');
-      console.log(`Heading: ${filteringResult.Heading}`);
-      console.log(`Abstract: ${filteringResult.Abstract.substring(0, 100)}...`);
-      console.log(`Image URL: ${filteringResult.Image || 'Filtered out'}`);
-      console.log(`Image dimensions: ${filteringResult.ImageWidth}x${filteringResult.ImageHeight} (should be 0x0)`);
-      console.log('Note: Images were filtered out as requested');
-    }
-  } catch (error) {
-    console.log('Filtering search error:', error);
-  }
 
-  console.log('\n' + '='.repeat(50) + '\n');
-
-  // Demo 2: Httpbin Form Submission
   console.log('2. Testing Httpbin Form Submission API...');
   try {
     const formData: HttpbinFormData = {

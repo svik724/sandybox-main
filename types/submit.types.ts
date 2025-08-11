@@ -7,20 +7,20 @@ export interface HttpbinFormField {
 }
 
 export interface HttpbinFormData {
-  custname?: string; // Customer name
-  custtel?: string; // Customer telephone
-  custemail?: string; // Customer email
-  size?: 'small' | 'medium' | 'large'; // Pizza size
-  topping?: string[]; // Pizza toppings (multiple selection) - options: bacon, cheese, onion, mushroom
-  delivery?: string; // Delivery time
-  comments?: string; // Additional comments
+  custname?: string;
+  custtel?: string;
+  custemail?: string;
+  size?: 'small' | 'medium' | 'large';
+  topping?: string[];
+  delivery?: string;
+  comments?: string;
 }
 
 export interface HttpbinFormRequest {
   formData: HttpbinFormData;
   options?: {
-    timeout?: number; // Request timeout in milliseconds
-    retries?: number; // Number of retry attempts
+    timeout?: number;
+    retries?: number;
   };
 }
 
@@ -51,21 +51,19 @@ export interface FormSubmissionError {
 
 export type FormSubmissionResult = HttpbinFormResponse | FormSubmissionError;
 
-// Form validation types
 export interface FormValidationResult {
   isValid: boolean;
   errors: string[];
   fieldErrors: Record<string, string[]>;
 }
 
-// Form field configuration for UI
 export interface FormFieldConfig {
   name: keyof HttpbinFormData;
   label: string;
   type: HttpbinFormField['type'];
   required: boolean;
   placeholder?: string;
-  options?: string[]; // For radio/checkbox fields
+  options?: string[];
   validation?: {
     pattern?: RegExp;
     minLength?: number;

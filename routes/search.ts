@@ -78,39 +78,3 @@ export async function searchWithValidation(
   return searchDuckDuckGo(sanitizedQuery, options);
 }
 
-/**
- * Search with result filtering and enhancement
- */
-export async function searchWithFiltering(
-  query: string,
-  options?: Partial<DuckDuckGoSearchRequest> & {
-    filterEmptyResults?: boolean;
-    includeImages?: boolean;
-  }
-): Promise<SearchResult> {
-  const result = await searchDuckDuckGo(query, options);
-  
-  if ('error' in result) {
-    return result;
-  }
-
-  // Filter out empty results if requested
-  if (options?.filterEmptyResults && !result.Abstract && result.RelatedTopics.length === 0) {
-    const error: SearchError = {
-      error: 'NO_RESULTS',
-      message: 'No results found for the given query',
-      statusCode: 404
-    };
-    return error;
-  }
-
-  // Filter out images if not requested
-  if (!options?.includeImages) {
-    result.Image = '';
-    result.ImageHeight = 0;
-    result.ImageWidth = 0;
-    result.ImageIsLogo = 0;
-  }
-
-  return result;
-}

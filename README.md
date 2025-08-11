@@ -2,6 +2,8 @@
 
 A comprehensive demonstration of reverse-engineering undocumented APIs, implementing TypeScript types, and building production-ready backend routes. This project showcases real-world integration skills where formal API specifications don't exist.
 
+By: Saatvik Billa | svik724@berkeley.edu
+
 ## 📋 Table of Contents
 
 - [Project Structure](#project-structure)
@@ -33,11 +35,11 @@ This project demonstrates the reverse-engineering process through comprehensive 
 - **Documentation of findings** including response structures, field types, and edge cases
 - **Design rationale** for implementation choices and architecture decisions
 
-### DuckDuckGo Search API
+### <span style="color: #ffcc00;">DuckDuckGo Search API</span>
 
 #### Initial Exploration
 
-I discovered the DuckDuckGo API through a Google search for "DuckDuckGo GET Request" and found the format: `http://api.duckduckgo.com/?q=x&format=json`
+I discovered the DuckDuckGo API through a Google search for "DuckDuckGo GET Request" and found the format: `http://api.duckduckgo.com/?q=x&format=json`. I found the easiest way to approach this would be to run curl commands in the terminal and evaluate the different JSON responses.
 
 **Basic API Call:**
 ```bash
@@ -128,29 +130,23 @@ curl "https://api.duckduckgo.com/?q=typescript&format=json"
 
 #### Parameter Investigation
 
-Tested various parameters to understand the API's capabilities:
+At this point, I knew that there were two main parameters: *q* and *format*, but I knew from previous knowledge that *no_html* is present in practically every API I've come across, so I tried it out and got a valid response as well, leading me to add it to the schema.
 
+
+Basic search: 
 ```bash
-# Basic search
 curl "https://api.duckduckgo.com/?q=typescript&format=json"
-
-# With HTML removal
-curl "https://api.duckduckgo.com/?q=typescript&format=json&no_html=1"
-
-# Different formats
-curl "https://api.duckduckgo.com/?q=typescript&format=xml"
-
-# Error testing
-curl "https://api.duckduckgo.com/?q=&format=json"
-curl "https://api.duckduckgo.com/?q=$(printf 'a%.0s' {1..300})&format=json"
 ```
 
-#### Investigation Insights
+With HTML removal: 
+```bash
+curl "https://api.duckduckgo.com/?q=typescript&format=json&no_html=1"
+```
 
-**Infobox Structure Discovery:**
-- **Initial Assumption**: Believed Infobox would be a complex nested structure with content arrays and metadata
-- **Actual Discovery**: Infobox is consistently a simple string across all tested queries
-- **Lesson Learned**: Real investigation reveals actual API behavior, not assumed complexity
+The interesting thing was when you sent an invalid response, you would just get no response back whatsoever and even a 200 HTTP status code. Hence, when implementing the API, I had to add some extra error checking where I processed the query and checked it for certain things (i.e. empty, too long, HTML tags, etc.)
+```bash
+curl "https://api.duckduckgo.com/?q=&format=json"
+curl "https://api.duckduckgo.com/?q=$(printf 'a%.0s' {1..300})&format=json"
 ```
 
 #### Key Discoveries
@@ -187,7 +183,7 @@ The `RelatedTopics` array contains two types of items:
 }
 ```
 
-2. **"See also" Section** (usually the last item):
+2. **Additional "Topical" Section** (usually at the end of the list, but count is not deterministic):
 ```json
 {
   "Name": "See also",
@@ -202,41 +198,49 @@ The `RelatedTopics` array contains two types of items:
 }
 ```
 
-**Key Insight:** The API returns different RelatedTopics structures depending on the query type and available content.
+OR 
 
-#### Edge Cases Discovered
-
-**Empty Results:**
 ```json
 {
-  "Abstract": "",
-  "AbstractSource": "",
-  "AbstractText": "",
-  "AbstractURL": "",
-  "Heading": "",
-  "Type": "",
-  "RelatedTopics": [],
-  "Results": []
-}
+      "Name": "Roller coasters",
+      "Topics": [
+        {
+          "FirstURL": "https://duckduckgo.com/Python_(Efteling)",
+          "Icon": {
+            "Height": "",
+            "URL": "/i/250a54c9.jpg",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/Python_(Efteling)\">Python (Efteling)</a>A double-loop corkscrew roller coaster in the Efteling amusement park in the Netherlands.",
+          "Text": "Python (Efteling) A double-loop corkscrew roller coaster in the Efteling amusement park in the Netherlands."
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/Python_(Busch_Gardens_Tampa_Bay)",
+          "Icon": {
+            "Height": "",
+            "URL": "/i/30cba8e6.jpg",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/Python_(Busch_Gardens_Tampa_Bay)\">Python (Busch Gardens Tampa Bay)</a>A steel roller coaster located at Busch Gardens Tampa Bay theme park in Tampa, Florida.",
+          "Text": "Python (Busch Gardens Tampa Bay) A steel roller coaster located at Busch Gardens Tampa Bay theme park in Tampa, Florida."
+        },
+      ]
+    },
 ```
 
 **Error Responses:**
-- Invalid queries return empty responses
+- Invalid queries return empty responses with a 200 
 - Network errors need to be handled gracefully
 - API rate limiting possible
 
-### Httpbin Form Submission API
+### <span style="color: #ffcc00;">Httpbin Form Submission API</span>
 
 #### Initial Exploration
 
 **Form Discovery:**
-Started by visiting the form page to understand the structure: `https://httpbin.org/forms/post`
+I started by visiting the form page to understand the structure: `https://httpbin.org/forms/post`
 
-**Key Discovery:** This is an HTML form, not a REST API endpoint.
-
-#### Form Structure Analysis
-
-Inspected the HTML form to identify all field types and names:
+I opened up the web inspector to view the actual HTML to identify all field types and names:
 
 ```html
 <form method="post" action="/post">
@@ -268,7 +272,7 @@ Inspected the HTML form to identify all field types and names:
 
 #### Submission Flow Investigation
 
-Tested the form submission to understand the response:
+I tested the form submission to understand the response:
 
 1. **Form Submission**: POST request to `/post` endpoint
 2. **Response Page**: Returns a page showing submitted data
@@ -279,17 +283,11 @@ Tested the form submission to understand the response:
 **Form Fields:**
 - `custname`: Text input for customer name
 - `custtel`: Telephone input with validation
-- `custemail`: Email input with format validation
+- `custemail`: Email input with format (@) validation
 - `size`: Radio buttons (small, medium, large)
 - `topping`: Checkboxes (bacon, cheese, onion, mushroom)
 - `delivery`: Time input (HH:MM format)
 - `comments`: Textarea for additional instructions
-
-**Field Types:**
-- **Text Inputs**: custname, comments
-- **Specialized Inputs**: custtel (tel), custemail (email), delivery (time)
-- **Radio Buttons**: size (single selection)
-- **Checkboxes**: topping (multiple selection)
 
 #### Response Structure Analysis
 
@@ -311,27 +309,37 @@ The response page contains the submitted data in this format:
     "comments": "Extra crispy please"
   },
   "headers": {
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Encoding": "gzip, deflate",
-    "Accept-Language": "en-US,en;q=0.5",
-    "Content-Length": "123",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "Accept-Encoding": "gzip, deflate, br, zstd",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Cache-Control": "max-age=0",
+    "Content-Length": "104",
     "Content-Type": "application/x-www-form-urlencoded",
     "Host": "httpbin.org",
     "Origin": "https://httpbin.org",
+    "Priority": "u=0, i",
     "Referer": "https://httpbin.org/forms/post",
-    "User-Agent": "Mozilla/5.0..."
+    "Sec-Ch-Ua": "'Google Chrome';v='137', 'Chromium';v='137', 'Not/A)Brand';v='24'",
+    "Sec-Ch-Ua-Mobile": "?0",
+    "Sec-Ch-Ua-Platform": "'macOS'",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "same-origin",
+    "Sec-Fetch-User": "?1",
+    "Upgrade-Insecure-Requests": "1",
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "X-Amzn-Trace-Id": "Root=1-68994ab4-0fa63e8b41827a801b166d2a"
   },
-  "json": null,
-  "method": "POST",
-  "origin": "192.168.1.1",
-  "url": "https://httpbin.org/post"
+    "json": null,
+    "origin": "xx.xxx.xx.xx",
+    "url": "https://httpbin.org/post"
 }
 ```
 
-#### Implementation Challenges
+#### There were some challenges, doable of course, that I had to tackle in order to implement this process:
 
 **1. Form Interaction:**
-- Need to programmatically fill form fields
+- Programmatically fill form fields
 - Handle different input types (text, radio, checkbox, time)
 - Submit form and wait for response
 
@@ -342,33 +350,70 @@ The response page contains the submitted data in this format:
 
 **3. Browser Automation:**
 - Must use Playwright as required for POST requests
-- Handle browser lifecycle (launch, page creation, cleanup)
-- Manage timeouts and error scenarios
 
 #### Solution Strategy
 
 **Playwright Implementation:**
 ```typescript
-// Launch browser
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage();
 
-// Navigate to form
 await page.goto('https://httpbin.org/forms/post');
 
-// Fill form fields
 await page.fill('input[name="custname"]', formData.custname);
 await page.check(`input[name="size"][value="${formData.size}"]`);
 
-// Submit form
 await page.click('button:has-text("Submit order")');
 
-// Extract response
 const responseData = await page.evaluate(() => {
   const formDataElement = document.querySelector('pre');
   return JSON.parse(formDataElement.textContent || '{}');
 });
 ```
+
+Next, one thing I want to mention is exponential backoff, which allows the application to retry requests that error out in an efficient manner. For the scope of this project, it may not seem necessary, but as an application scales to have millions of results, it would definitely come in handy.
+
+#### Resilience and Retry Logic
+
+**Exponential Backoff Implementation:**
+To handle transient failures and network issues, the form submission includes intelligent retry logic with exponential backoff:
+
+```typescript
+export async function submitFormWithRetry(
+  request: HttpbinFormRequest,
+  maxRetries: number = 3
+): Promise<FormSubmissionResult> {
+  let lastError: FormSubmissionError | null = null;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      ...
+    } catch (error) {
+      ...
+      // exponential backoff
+      if (attempt < maxRetries) {
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+      }
+    }
+  }
+  
+  return lastError!;
+}
+```
+
+**How Exponential Backoff Works:**
+- **Attempt 1**: Immediate retry
+- **Attempt 2**: Wait 2 seconds
+- **Attempt 3**: Wait 4 seconds
+- **Attempt 4**: Wait 8 seconds
+
+**Benefits:**
+- **Improved reliability** for transient network issues
+- **Server-friendly** - doesn't hammer the API with rapid retries
+- **User experience** - automatically handles temporary failures
+- **Production-ready** - handles real-world network conditions
+- Handle browser lifecycle (launch, page creation, cleanup)
+- Manage timeouts and error scenarios
 
 ## 🎯 Design Decisions
 
@@ -383,66 +428,25 @@ const responseData = await page.evaluate(() => {
 **Rationale**: Clean separation makes the code maintainable and testable.
 
 **2. Error Handling Strategy:**
+
+Responses returned could either be successful or not, so I defined two types of responses and allowed the final result to be either of them:
+
 ```typescript
-// Union types for success/error responses
 export type SearchResult = DuckDuckGoSearchResponse | SearchError;
 export type FormSubmissionResult = HttpbinFormResponse | FormSubmissionError;
 
-// Structured error responses
+// error schema specifically for the DuckDuckGo implementation
 export interface SearchError {
-  error: string;        // Error code for programmatic handling
-  message: string;      // Human-readable error message
-  statusCode: number;   // HTTP status code
+  error: string; 
+  message: string;
+  statusCode: number;
 }
 ```
-
-**Rationale**: Consistent error handling across both APIs with proper typing.
-
-**3. Input Validation Approach:**
-- **Pre-validation**: Check inputs before making API calls
-- **Sanitization**: Basic XSS prevention and input cleaning
-- **Type safety**: Ensure inputs match expected types
-- **Graceful degradation**: Return validation errors instead of crashing
-
-**Rationale**: Fail fast with clear error messages rather than mysterious failures.
-
-### API Integration Decisions
-
-**1. DuckDuckGo Search API:**
-```typescript
-// Use fetch for GET requests as required
-const response = await fetch(`https://api.duckduckgo.com/?${params.toString()}`, {
-  method: 'GET',
-  headers: {
-    'Accept': 'application/json',
-    'User-Agent': 'SandyBox-Integration/1.0'
-  }
-});
-```
-
-**Rationale**: 
-- Follows requirement to use `fetch` for GET requests
-- Proper headers for API identification
-- URL parameter building for flexibility
-
-**2. Httpbin Form Submission:**
-```typescript
-// Use Playwright for POST requests as required
-const browser = await chromium.launch({ headless: true });
-const page = await browser.newPage();
-await page.goto('https://httpbin.org/forms/post');
-```
-
-**Rationale**:
-- Follows requirement to use Playwright for POST requests
-- Headless mode for server-side operation
-- Proper browser lifecycle management
 
 ### Type System Decisions
 
 **1. Comprehensive Type Coverage:**
 ```typescript
-// Complete API response structure
 export interface DuckDuckGoSearchResponse {
   Abstract: string;
   AbstractSource: string;
@@ -452,14 +456,12 @@ export interface DuckDuckGoSearchResponse {
   Image: string;
   ImageHeight: number;
   ImageWidth: number;
-  // ... all discovered fields
+  // ... the rest is in search.types.ts
 }
 ```
 
 **Rationale**: 
 - Complete type safety prevents runtime errors
-- Self-documenting code
-- Better IDE support and autocomplete
 
 **2. Union Types for Error Handling:**
 ```typescript
@@ -476,40 +478,20 @@ export type FormSubmissionResult = HttpbinFormResponse | FormSubmissionError;
 
 ### Comprehensive Test Coverage
 
-**1. Success Cases:**
-- Normal operation validation
-- Various search queries and form combinations
-- Response structure validation
+**Jest Test Suite (16 tests):**
+- **Search API Tests**: Input validation, error handling, response structure, network failures, API errors, type safety
+- **Submit API Tests**: Form validation, submission success/failure, timeout handling, retry logic, response structure validation
 
-**2. Error Cases:**
-- Network failures
-- API errors
-- Validation errors
-- Timeout scenarios
+**Demo Script Tests:**
+- **Functional Testing**: Real API calls with actual data to demonstrate working functionality
+- **Error Handling**: Tests various error scenarios like empty queries, XSS sanitization, and form validation failures
+- **Integration Testing**: End-to-end workflows showing how both APIs work together in a real application
 
-**3. Edge Cases:**
-- Empty inputs
-- Long queries
-- Special characters
-- Partial form data
-
-**4. Integration Testing:**
-- Real API calls for end-to-end validation
-- Browser automation testing
-- Response parsing validation
-
-### Real API Testing
-
-```typescript
-// Test with actual APIs, not mocks
-const result = await searchDuckDuckGo('typescript');
-expect('error' in result).toBe(false);
-```
-
-**Rationale**: 
-- Validates real-world behavior
-- Catches API changes
-- Ensures integration actually works
+**Test Coverage Areas:**
+- **Success Paths**: Normal operation with various inputs
+- **Error Scenarios**: Network failures, validation errors, API errors, timeouts
+- **Edge Cases**: Empty inputs, malformed data, special characters
+- **Type Safety**: Response structure validation and TypeScript compliance
 
 ## 🚀 Getting Started
 

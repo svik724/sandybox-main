@@ -1,18 +1,16 @@
-import { searchDuckDuckGo, searchWithValidation, searchWithFiltering } from '../routes/search';
+import { searchDuckDuckGo, searchWithValidation } from '../routes/search';
 
 describe('Search API Integration', () => {
-  // Test successful search
+
   it('should return properly typed search results', async () => {
     const result = await searchDuckDuckGo('test');
     
-    // Should not be an error
     expect('error' in result).toBe(false);
     
     if ('error' in result) {
       throw new Error('Expected successful result');
     }
     
-    // Validate response structure
     expect(result).toHaveProperty('Abstract');
     expect(result).toHaveProperty('AbstractSource');
     expect(result).toHaveProperty('AbstractText');
@@ -21,20 +19,17 @@ describe('Search API Integration', () => {
     expect(result).toHaveProperty('Type');
     expect(result).toHaveProperty('meta');
     
-    // Validate types
     expect(typeof result.Abstract).toBe('string');
     expect(typeof result.AbstractSource).toBe('string');
     expect(typeof result.Heading).toBe('string');
     expect(typeof result.Type).toBe('string');
     expect(typeof result.meta).toBe('object');
     
-    // Validate meta structure
     expect(result.meta).toHaveProperty('name');
     expect(result.meta).toHaveProperty('description');
     expect(result.meta).toHaveProperty('id');
   }, 30000);
 
-  // Test error handling for invalid queries
   it('should handle invalid search queries', async () => {
     const emptyResult = await searchDuckDuckGo('');
     expect('error' in emptyResult).toBe(true);
@@ -54,7 +49,6 @@ describe('Search API Integration', () => {
     }
   });
 
-  // Test enhanced validation
   it('should validate and sanitize input properly', async () => {
     const longQuery = 'a'.repeat(201);
     const result = await searchWithValidation(longQuery);
@@ -68,28 +62,9 @@ describe('Search API Integration', () => {
     }
   });
 
-  // Test filtering options
-  it('should handle filtering options correctly', async () => {
-    const result = await searchWithFiltering('test', { 
-      filterEmptyResults: true,
-      includeImages: false 
-    });
-    
-    if ('error' in result) {
-      // If no results found, that's expected behavior
-      expect(result.error).toBe('NO_RESULTS');
-      return;
-    }
-    
-    // If results found, images should be filtered out
-    expect(result.Image).toBe('');
-    expect(result.ImageHeight).toBe(0);
-    expect(result.ImageWidth).toBe(0);
-  }, 30000);
 
-  // Test network error handling
+
   it('should handle network errors gracefully', async () => {
-    // Mock fetch to simulate network error
     const originalFetch = global.fetch;
     global.fetch = jest.fn().mockRejectedValue(new Error('Network error'));
     
@@ -107,9 +82,7 @@ describe('Search API Integration', () => {
     }
   });
 
-  // Test API error responses
   it('should handle API error responses', async () => {
-    // Mock fetch to simulate API error
     const originalFetch = global.fetch;
     global.fetch = jest.fn().mockResolvedValue({
       ok: false,
@@ -131,9 +104,7 @@ describe('Search API Integration', () => {
     }
   });
 
-  // Test response structure validation
   it('should validate response structure matches defined types', async () => {
-    // Mock fetch to return invalid response
     const originalFetch = global.fetch;
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
@@ -153,21 +124,18 @@ describe('Search API Integration', () => {
     }
   });
 
-  // Test different search queries
   it('should handle different types of search queries', async () => {
     const queries = ['javascript', 'python', 'typescript', 'react'];
     
     for (const query of queries) {
       const result = await searchDuckDuckGo(query);
       
-      // Should not be an error
       expect('error' in result).toBe(false);
       
       if ('error' in result) {
         throw new Error(`Query "${query}" failed: ${result.message}`);
       }
       
-      // Should have basic structure
       expect(result).toHaveProperty('Heading');
       expect(result).toHaveProperty('Type');
     }
