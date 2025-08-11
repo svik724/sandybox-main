@@ -542,3 +542,25 @@ This project demonstrates:
 ## 🎉 Conclusion
 
 This investigation process demonstrates real-world API integration skills where formal documentation is unavailable. The systematic approach to API discovery, comprehensive type definition, and production-ready implementation showcase the skills needed for real-world integration work.
+
+## ✅ Expected Test Results
+
+When you run `npm test`, you should see output similar to this:
+
+```bash
+saatvikbilla@Saatviks-MacBook-Pro sandybox-main % npm test
+
+> sandybox-main@1.0.0 test
+> jest
+
+ PASS  tests/search.test.ts
+ PASS  tests/submit.test.ts (11.325 s)
+
+Test Suites: 2 passed, 2 total
+Tests:       16 passed, 16 total
+Snapshots:   0 total
+Time:        11.641 s, estimated 12 s
+Ran all test suites.
+
+✨  All tests passed successfully!
+```
