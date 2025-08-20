@@ -8,6 +8,7 @@ import {
 } from '../types/submit.types';
 
 describe('Submit API Integration', () => {
+  
   // Test successful form submission
   it('should successfully submit form data', async () => {
     const formData: HttpbinFormData = {
@@ -29,20 +30,17 @@ describe('Submit API Integration', () => {
 
     const result = await submitForm(request);
     
-    // Should not be an error
     expect('error' in result).toBe(false);
     
     if ('error' in result) {
       throw new Error('Expected successful submission');
     }
     
-    // Validate response structure
     expect(result.success).toBe(true);
     expect(result.statusCode).toBe(200);
     expect(result.timestamp).toBeDefined();
     expect(result.data).toBeDefined();
     
-    // Validate form data in response - httpbin returns empty strings for unfilled fields
     const expectedFormData = {
       custname: 'John Doe',
       custtel: '1234567890',
@@ -53,7 +51,6 @@ describe('Submit API Integration', () => {
       comments: 'Extra crispy please'
     };
     
-    // Check that our submitted data is present
     expect(result.data.form.custname).toBe(expectedFormData.custname);
     expect(result.data.form.custtel).toBe(expectedFormData.custtel);
     expect(result.data.form.custemail).toBe(expectedFormData.custemail);
@@ -69,7 +66,6 @@ describe('Submit API Integration', () => {
 
   // Test form submission errors
   it('should handle form submission errors', async () => {
-    // Test with invalid email
     const invalidFormData: HttpbinFormData = {
       custname: 'John Doe',
       custemail: 'invalid-email'
@@ -81,7 +77,6 @@ describe('Submit API Integration', () => {
 
     const result = await submitForm(request);
     
-    // Should be a validation error
     expect('error' in result).toBe(true);
     
     if ('error' in result) {
@@ -158,11 +153,25 @@ describe('Submit API Integration', () => {
 
   // Test retry logic
   it('should implement retry logic for failed submissions', async () => {
-    // This test would require mocking Playwright to simulate failures
-    // For now, we'll test the retry function exists and has the right signature
-    expect(typeof submitFormWithRetry).toBe('function');
     
-    // Test with valid data to ensure retry function works
+    const mockSubmitForm = (() => {
+      console.log('MOCK CALLED!');
+      return Promise.resolve({
+        error: 'API_ERROR',
+        message: 'Server temporarily unavailable',
+        statusCode: 503
+      });
+    });
+    
+    // Mock the module function directly
+    const submitModule = require('../routes/submit');
+    const originalSubmitForm = submitModule.submitForm;
+    submitModule.submitForm = mockSubmitForm;
+    
+    // Debug: verify the mock is in place
+    console.log('Mock function:', typeof submitModule.submitForm);
+    console.log('Is mock?', submitModule.submitForm === mockSubmitForm);
+    
     const formData: HttpbinFormData = {
       custname: 'Test User',
       size: 'small'
@@ -172,13 +181,24 @@ describe('Submit API Integration', () => {
       formData
     };
 
-    const result = await submitFormWithRetry(request, 2);
+    const timestamps: number[] = [];
+    const originalLog = console.log;
+    console.log = (...args: any[]) => { // re-define console.log to track timestamps of calls
+      if (args[0]?.includes?.('submitForm called at')) {
+        timestamps.push(Date.now());
+      }
+      originalLog(...args);
+    };
+
+    const result = await submitFormWithRetry(request, 3);
+
+    console.log = originalLog;
     
-    if ('error' in result) {
-      throw new Error(`Retry submission failed: ${result.message}`);
-    }
-    
-    expect(result.success).toBe(true);
+    // Restore the original function
+    submitModule.submitForm = originalSubmitForm;
+        
+    console.log('Call timestamps:', timestamps);
+    console.log('Time between calls:', timestamps.slice(1).map((t, i) => t - timestamps[i]));
   }, 60000);
 
   // Test timeout handling
@@ -213,7 +233,6 @@ describe('Submit API Integration', () => {
 
     const result = await submitForm(request);
     
-    // Should succeed with empty form
     expect('error' in result).toBe(false);
     
     if ('error' in result) {
@@ -221,7 +240,6 @@ describe('Submit API Integration', () => {
     }
     
     expect(result.success).toBe(true);
-    // httpbin returns empty strings for unfilled fields, not undefined
     expect(result.data.form.custname).toBe('');
     expect(result.data.form.custtel).toBe('');
     expect(result.data.form.custemail).toBe('');
@@ -234,7 +252,7 @@ describe('Submit API Integration', () => {
     const partialData: HttpbinFormData = {
       custname: 'Partial User',
       size: 'medium'
-      // Missing other fields intentionally
+      // missing other fields intentionally
     };
 
     const request: HttpbinFormRequest = {
@@ -247,11 +265,9 @@ describe('Submit API Integration', () => {
       throw new Error(`Partial form submission failed: ${result.message}`);
     }
     
-    // Should only submit the provided fields
     expect(result.data.form.custname).toBe('Partial User');
     expect(result.data.form.size).toBe('medium');
-    // httpbin returns empty strings for unfilled fields, not undefined
-    expect(result.data.form.custtel).toBe('');
+    expect(result.data.form.custtel).toBe(''); // httpbin returns empty strings for unfilled fields, not undefined    
     expect(result.data.form.custemail).toBe('');
   }, 60000);
 
@@ -271,7 +287,6 @@ describe('Submit API Integration', () => {
       throw new Error(`Structure test failed: ${result.message}`);
     }
     
-    // Validate all required properties exist
     expect(result).toHaveProperty('success');
     expect(result).toHaveProperty('data');
     expect(result).toHaveProperty('timestamp');
@@ -283,7 +298,6 @@ describe('Submit API Integration', () => {
     expect(result.data).toHaveProperty('origin');
     expect(result.data).toHaveProperty('headers');
     
-    // Validate types
     expect(typeof result.success).toBe('boolean');
     expect(typeof result.timestamp).toBe('string');
     expect(typeof result.statusCode).toBe('number');

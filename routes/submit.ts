@@ -186,23 +186,24 @@ export async function submitFormWithRetry(
   let lastError: FormSubmissionError | null = null;
   
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    console.log(`submitForm called at ${new Date().toISOString()}, attempt ${attempt}`);
     const result = await submitForm(request);
+    console.log("result", result)
     
     if ('error' in result) {
       if (result.statusCode >= 400 && result.statusCode < 500) {
-        return result; // Client errors - don't retry
+        return result;
       }
-      // Server errors - retry
       lastError = result;
       
       if (attempt < maxRetries) {
-        // Exponential backoff here in the loop
-        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000)); // exponential backoff
+
       }
       continue;
     }
     
-    return result; // Success
+    return result;
   }
   
   return lastError!;
