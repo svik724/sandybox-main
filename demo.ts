@@ -18,13 +18,13 @@ async function demo() {
       console.log(`Source: ${searchResult.AbstractSource}`);
       console.log(`Type: ${searchResult.Type}`);
       
-      console.log(`   Related Topics: ${searchResult.RelatedTopics.length} items`);
+      console.log(`Related Topics: ${searchResult.RelatedTopics.length} items`);
       
       searchResult.RelatedTopics.forEach((item: DuckDuckGoRelatedTopicsItem, index: number) => {
         if ('Name' in item && item.Name === 'See also') {
-          console.log(`     ${index + 1}. "See also" section with ${item.Topics.length} topics`);
+          console.log(`${index + 1}. "See also" section with ${item.Topics.length} topics`);
         } else if ('Text' in item) {
-          console.log(`     ${index + 1}. ${item.Text.substring(0, 50)}...`);
+          console.log(`${index + 1}. ${item.Text.substring(0, 50)}...`);
         }
       });
     }
@@ -67,8 +67,6 @@ async function demo() {
   } catch (error) {
     console.log('Validation search error:', error);
   }
-
-
 
   console.log('2. Testing Httpbin Form Submission API...');
   try {

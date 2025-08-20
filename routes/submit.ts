@@ -40,6 +40,7 @@ export async function submitForm(request: HttpbinFormRequest): Promise<FormSubmi
     await fillFormFields(page, request.formData);
 
     const response = await submitFormAndWait(page);
+    // console.log(response)
 
     const formResponse: HttpbinFormResponse = {
       success: true,
@@ -114,6 +115,7 @@ async function submitFormAndWait(page: Page): Promise<any> {
   
   const responseData = await page.evaluate(() => {
     const formDataElement = document.querySelector('pre');
+    // console.log(formDataElement)
     if (formDataElement) {
       try {
         return JSON.parse(formDataElement.textContent || '{}');
@@ -184,30 +186,23 @@ export async function submitFormWithRetry(
   let lastError: FormSubmissionError | null = null;
   
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      const result = await submitForm(request);
-      
-      if ('error' in result) {
-        if (result.statusCode === 400) {
-          return result;
-        }
-        lastError = result;
-        continue;
+    const result = await submitForm(request);
+    
+    if ('error' in result) {
+      if (result.statusCode >= 400 && result.statusCode < 500) {
+        return result; // Client errors - don't retry
       }
-      
-      return result;
-      
-    } catch (error) {
-      lastError = {
-        error: 'RETRY_ERROR',
-        message: `Attempt ${attempt} failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        statusCode: 500
-      };
+      // Server errors - retry
+      lastError = result;
       
       if (attempt < maxRetries) {
+        // Exponential backoff here in the loop
         await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
       }
+      continue;
     }
+    
+    return result; // Success
   }
   
   return lastError!;

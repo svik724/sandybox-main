@@ -54,14 +54,14 @@ describe('Submit API Integration', () => {
     };
     
     // Check that our submitted data is present
-    expect(result.data.form.custname).toBe('John Doe');
-    expect(result.data.form.custtel).toBe('1234567890');
-    expect(result.data.form.custemail).toBe('john@example.com');
-    expect(result.data.form.size).toBe('medium');
-    expect(result.data.form.topping).toContain('cheese');
-    expect(result.data.form.topping).toContain('bacon');
-    expect(result.data.form.delivery).toBe('18:30');
-    expect(result.data.form.comments).toBe('Extra crispy please');
+    expect(result.data.form.custname).toBe(expectedFormData.custname);
+    expect(result.data.form.custtel).toBe(expectedFormData.custtel);
+    expect(result.data.form.custemail).toBe(expectedFormData.custemail);
+    expect(result.data.form.size).toBe(expectedFormData.size);
+    expect(result.data.form.topping).toContain(expectedFormData.topping[0]);
+    expect(result.data.form.topping).toContain(expectedFormData.topping[1]);
+    expect(result.data.form.delivery).toBe(expectedFormData.delivery);
+    expect(result.data.form.comments).toBe(expectedFormData.comments);
     
     expect(result.data.method).toBe('POST');
     expect(result.data.url).toContain('httpbin.org');
